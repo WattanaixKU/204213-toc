@@ -86,7 +86,7 @@ STATE_DIAGRAM = {
     ],
     IDEN_STATE: [
         {
-            "check_function": my_isliteral,
+            "check_function": my_isalpha,
             "append": True,
             "return": None,
             "next_state": IDEN_STATE
@@ -153,22 +153,20 @@ STATE_DIAGRAM = {
         }
     ]
 }
-# -------------------------------------------------------
-word = ""
 
 class lexer():
     infile = None
     state = None
-    char = ""
+    char = None
 
 def lexer():
     if(not lexer.char):
         lexer.char = lexer.infile.read(1)
     lexeme = ""
     while(True):
-        print(lexer.state)
+        # print(lexer.state)
         for action in STATE_DIAGRAM[lexer.state]:
-            print(action)
+            # print("action:", action, "lexeme:", f'"{lexeme}"')
             if action["check_function"](lexer.char):
                 lexer.state = action["next_state"]
                 if(action["append"]):
@@ -178,9 +176,7 @@ def lexer():
                     return(action["return"], lexeme.strip())
                 break
 
-
 #=========================================================
-
 
 infile = sys.stdin
 lexer.infile = infile    # lexer's input file
