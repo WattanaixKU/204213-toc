@@ -42,6 +42,9 @@ def other(char):
 def my_is_eof(char):
     return char == '' or char == '\0'
 
+def my_isdecimal(char):
+    return char == '.'
+
 STATE_DIAGRAM = {
     START: [
         {
@@ -60,7 +63,7 @@ STATE_DIAGRAM = {
             "check_function": my_isalpha,
             "append": True,
             "return": None,
-            "next_state": IDEN
+            "next_state": IDEN_STATE
         },
         {
             "check_function": my_isliteral,
@@ -80,15 +83,81 @@ STATE_DIAGRAM = {
             "return": ERROR,
             "next_state": START
         }
+    ],
+    IDEN_STATE: [
+        {
+            "check_function": my_isliteral,
+            "append": True,
+            "return": None,
+            "next_state": IDEN_STATE
+        },
+        {
+            "check_function": my_isdigit,
+            "append": True,
+            "return": None,
+            "next_state": IDEN_STATE
+        },
+        {
+            "check_function": other,
+            "append": False,
+            "return": IDEN,
+            "next_state": START
+        },
+    ],
+    INT_STATE: [
+        {
+            "check_function": my_isdigit,
+            "append": True,
+            "return": None,
+            "next_state": INT_STATE
+        },
+        {
+            "check_function": my_isdecimal,
+            "append": True,
+            "return": None,
+            "next_state": DECIMAL_STATE
+        },
+        {
+            "check_function": other,
+            "append": False,
+            "return": CONST,
+            "next_state": START
+        }
+    ],
+    DECIMAL_STATE: [
+        {
+            "check_function": my_isdigit,
+            "append": True,
+            "return": None,
+            "next_state": FLOAT_STATE
+        },
+        {
+            "check_function": other,
+            "append": False,
+            "return": ERROR,
+            "next_state": START
+        }
+    ],
+    FLOAT_STATE: [
+        {
+            "check_function": my_isdigit,
+            "append": True,
+            "return": None,
+            "next_state": FLOAT_STATE
+        },
+        {
+            "check_function": other,
+            "append": False,
+            "return": CONST,
+            "next_state": START
+        }
     ]
 }
 # -------------------------------------------------------
 word = ""
-LITERAL_LIST = ['+', '-', '*', '/', '(', ')']
-D = [str(c) for c in range(10)]
-L = [chr(i) for i in range(97, 123)] + D
+
 class lexer():
-    infile = ""
+    infile = None
     state = None
     char = None
 
