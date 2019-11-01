@@ -18,7 +18,71 @@ tokname = {
 
 #=========================================================
 
-START = 5
+START = 0
+IDEN_STATE = 1
+INT_STATE = 2
+DECIMAL_STATE = 3
+FLOAT_STATE = 4
+
+def my_isdigit(char):
+    return char.isdigit()
+
+def my_isspace(char):
+    return char.isspace()
+
+def my_isalpha(char):
+    return char.isalpha()
+
+def my_isliteral(char):
+    return char in ['+', '-', '*', '/', '(', ')']
+
+def other(char):
+    return True
+
+def my_is_eof(char):
+    return char == '' or char == '\0'
+
+STATE_DIAGRAM = {
+    START: [
+        {
+            "check_function": my_isdigit,
+            "append": True,
+            "return": None,
+            "next_state": INT_STATE
+        },
+        {
+            "check_function": my_isspace,
+            "append": True,
+            "return": None,
+            "next_state": START
+        },
+        {
+            "check_function": my_isalpha,
+            "append": True,
+            "return": None,
+            "next_state": IDEN
+        },
+        {
+            "check_function": my_isliteral,
+            "append": True,
+            "return": LITERAL,
+            "next_state": START
+        }, 
+        {
+            "check_function": my_is_eof,
+            "append": False,
+            "return": EOF,
+            "next_state": START
+        },
+        {
+            "check_function": other,
+            "append": True,
+            "return": ERROR,
+            "next_state": START
+        }
+    ]
+}
+# -------------------------------------------------------
 word = ""
 LITERAL_LIST = ['+', '-', '*', '/', '(', ')']
 D = [str(c) for c in range(10)]
