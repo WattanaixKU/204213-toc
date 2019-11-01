@@ -166,71 +166,19 @@ def lexer():
         lexer.char = lexer.infile.read(1)
     lexeme = ""
     while(True):
-        # print(lexer.state)
+        print(lexer.state)
         for action in STATE_DIAGRAM[lexer.state]:
-            # print(action)
+            print(action)
             if action["check_function"](lexer.char):
                 lexer.state = action["next_state"]
                 if(action["append"]):
                     lexeme += lexer.char
                     lexer.char = lexer.infile.read(1)
-                if(action["return"]):
+                if(action["return"] or action["return"] == EOF):
                     return(action["return"], lexeme.strip())
                 break
 
-"""
-def next_char():
-    global word
-    try:
-        char = word[0]
-        word = word[1:]
-        lexer.infile = word
-        if char.strip() == "":
-            return " "
-        return char
-    except:
-        raise Exception('no more char')
 
-def lexer():
-    try:
-        char = ""
-        string = ""
-        global word
-        try:
-            word = lexer.infile.read()
-        except:
-            word = lexer.infile
-        while(char.strip() == ""):
-            char = next_char()
-        if char in LITERAL_LIST:
-            return (2 , char)
-        elif char in D:
-            while(char in D):
-                string += char
-                char = next_char()
-                if(char == '.'):
-                    dot = False
-                    while(char in D or not dot):
-                        dot = True
-                        string += char
-                        char = next_char()
-            if(char != ' '):
-                lexer.infile = char + lexer.infile
-            if(string[-1] == '.'):
-                return (1, string)
-            return (4, string)
-        elif char in L:
-            while(char in L):
-                string += char
-                char = next_char()
-            if(char != ' '):
-                lexer.infile = char + lexer.infile
-            return (3, string)
-        else:
-            return (1, char)
-    except Exception:
-        return (0, None)
-"""
 #=========================================================
 
 
