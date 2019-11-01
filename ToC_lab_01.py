@@ -48,6 +48,12 @@ def my_isdecimal(char):
 STATE_DIAGRAM = {
     START: [
         {
+            "check_function": my_is_eof,
+            "append": False,
+            "return": EOF,
+            "next_state": START
+        },
+        {
             "check_function": my_isdigit,
             "append": True,
             "return": None,
@@ -71,12 +77,6 @@ STATE_DIAGRAM = {
             "return": LITERAL,
             "next_state": START
         }, 
-        {
-            "check_function": my_is_eof,
-            "append": False,
-            "return": EOF,
-            "next_state": START
-        },
         {
             "check_function": other,
             "append": True,
@@ -159,8 +159,26 @@ word = ""
 class lexer():
     infile = None
     state = None
-    char = None
+    char = ""
 
+def lexer():
+    if(not lexer.char):
+        lexer.char = lexer.infile.read(1)
+    lexeme = ""
+    while(True):
+        # print(lexer.state)
+        for action in STATE_DIAGRAM[lexer.state]:
+            # print(action)
+            if action["check_function"](lexer.char):
+                lexer.state = action["next_state"]
+                if(action["append"]):
+                    lexeme += lexer.char
+                    lexer.char = lexer.infile.read(1)
+                if(action["return"]):
+                    return(action["return"], lexeme.strip())
+                break
+
+"""
 def next_char():
     global word
     try:
@@ -212,7 +230,7 @@ def lexer():
             return (1, char)
     except Exception:
         return (0, None)
-
+"""
 #=========================================================
 
 
