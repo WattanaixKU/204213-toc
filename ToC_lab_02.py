@@ -256,8 +256,33 @@ GRAMMAR = {
     ]
 }
 
-def parser(symbol, input_string):
-    print(symbol_name[symbol], input_string)
+def parser(output_string, input_string):
+    # print(symbol_name[symbol], input_string)
+    output_ind = 0
+    token_ind = 0
+    current_token = input_string[token_ind]
+    while(output_ind < len(output_string)):
+        print(' '.join([symbol_name[char] if(type(char)==type(0)) else char for char in output_string]), output_ind, current_token)
+        if(output_string[output_ind] not in GRAMMAR.keys()):
+            output_ind += 1
+            token_ind += 1
+            current_token = input_string[token_ind]
+            continue
+        find_rule = False
+        for rule in GRAMMAR[output_string[output_ind]]:
+            if(len(rule) == 0):
+                find_rule = True
+                output_string = output_string[:output_ind] + output_string[output_ind+1:]
+                break
+            elif(rule[0] == current_token or rule[0] in GRAMMAR.keys()):
+                find_rule = True
+                output_string = output_string[:output_ind] + rule + output_string[output_ind+1:]
+                break
+        if(not find_rule):
+            return ERROR
+                    
+    
+    """
     if symbol in GRAMMAR.keys():
         for rule in GRAMMAR[symbol]:
             ind = 0
@@ -275,8 +300,8 @@ def parser(symbol, input_string):
                 return rule+input_string[ind:]
     else:
         return symbol
-            
+    """            
 
 
 
-parser(S, input_string)
+parser([S], input_string)
