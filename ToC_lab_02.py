@@ -186,6 +186,7 @@ lexer.char = None        # lexer's last character read
 while True:
     tokenID, lexeme = lexer()
     if tokenID == EOF:
+        input_string.append('')
         break
     # print('{}\t{}'.format(tokname[tokenID], lexeme))
     elif tokenID == LITERAL:
@@ -194,7 +195,6 @@ while True:
         input_string.append('?')
     else:
         input_string.append(tokname[tokenID])
-print(input_string)
 
 #=========================================================
 
@@ -206,14 +206,16 @@ Tp = 4
 F = 5
 A = 6
 
-symbol_name = {
+symbol_map = {
     S: 'S',
     E: 'E',
     Ep: 'Ep',
     T: 'T',
     Tp: 'Tp',
     F: 'F',
-    A: 'A'
+    A: 'A',
+    'IDEN': 'id',
+    'CONST': 'con'
 }
 
 GRAMMAR = {
@@ -260,48 +262,29 @@ def parser(output_string, input_string):
     # print(symbol_name[symbol], input_string)
     output_ind = 0
     token_ind = 0
-    current_token = input_string[token_ind]
     while(output_ind < len(output_string)):
-        print(' '.join([symbol_name[char] if(type(char)==type(0)) else char for char in output_string]), output_ind, current_token)
         if(output_string[output_ind] not in GRAMMAR.keys()):
+            if(output_string[output_ind] == input_string[token_ind]):
+                token_ind += 1
             output_ind += 1
-            token_ind += 1
-            current_token = input_string[token_ind]
             continue
+        print('L=>', ' '.join([symbol_map[char] if(char in symbol_map) else char for char in output_string]) )  # , output_ind, input_string[token_ind:])
         find_rule = False
         for rule in GRAMMAR[output_string[output_ind]]:
             if(len(rule) == 0):
                 find_rule = True
                 output_string = output_string[:output_ind] + output_string[output_ind+1:]
                 break
-            elif(rule[0] == current_token or rule[0] in GRAMMAR.keys()):
+            elif(rule[0] == input_string[token_ind] or rule[0] in GRAMMAR.keys()):
                 find_rule = True
                 output_string = output_string[:output_ind] + rule + output_string[output_ind+1:]
                 break
         if(not find_rule):
+            print('parse error')
             return ERROR
-                    
-    
-    """
-    if symbol in GRAMMAR.keys():
-        for rule in GRAMMAR[symbol]:
-            ind = 0
-            this_rule = True
-            for char in rule:
-                if(char in GRAMMAR.keys()):
-                    result = parser(char, input_string[ind:])
-                    ind += len(result)-1
-                    input_string[:ind-len(result)+1]+result+input_string[ind:]
-                elif(input_string[ind] != char):
-                    this_rule = False
-                    break
-                ind+=1
-            if(this_rule):
-                return rule+input_string[ind:]
+    if(token_ind != len(input_string)-1):
+        print('parse error')
     else:
-        return symbol
-    """            
-
-
-
+        print('L=>', ' '.join([symbol_map[char] if(char in symbol_map) else char for char in output_string]) )
+        
 parser([S], input_string)
