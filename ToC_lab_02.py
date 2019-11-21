@@ -260,7 +260,7 @@ GRAMMAR = {
 
 PARSING_TBL = {
     "HEADER": [IDEN, CONST, '+', '-', '*', '/', '(', ')', '?', ';', ''],
-    S: [[IDEN, '=', E, ';', S], [], [], [], [], [], [], [], ['?', S], [], [Eps]],
+    S: [[IDEN, '=', E, ';', S], [Eps], [Eps], [Eps], [Eps], [Eps], [Eps], [Eps], ['?', S], [Eps], [Eps]],
     E: [[T, Ep], [T, Ep], [T, Ep], [T, Ep], [T, Ep], [T, Ep], [T, Ep], [T, Ep], [T, Ep], [T, Ep], [T, Ep]],
     Ep: [[Eps], [Eps], ['+', T, Ep], ['-', T, Ep], [Eps], [Eps], [Eps], [Eps], [Eps], [Eps], [Eps]],
     T: [[F, Tp], [F, Tp], [F, Tp], [F, Tp], [F, Tp], [F, Tp], [F, Tp], [F, Tp], [F, Tp], [F, Tp], [F, Tp]],
@@ -299,6 +299,9 @@ def parser(input_string):
             continue
         stack = stack + PARSING_TBL[current_token][col_ind][::-1]
     print("L=>", ' '.join([symbol_map[char] if(char in symbol_map.keys()) else char for char in output_string]))
+    if(input_string or stack):
+        if(input_string != ['']):
+            raise ParsingError
 
 try:
     parser(input_string)
