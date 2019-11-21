@@ -260,7 +260,7 @@ GRAMMAR = {
 
 PARSING_TBL = {
     "HEADER": [IDEN, CONST, '+', '-', '*', '/', '(', ')', '?', ';', ''],
-    S: [[IDEN, '=', E, ';', S], [], [], [], [], [], [], [], ['?', S], [';'], [Eps]],
+    S: [[IDEN, '=', E, ';', S], [], [], [], [], [], [], [], ['?', S], [], [Eps]],
     E: [[T, Ep], [T, Ep], [T, Ep], [T, Ep], [T, Ep], [T, Ep], [T, Ep], [T, Ep], [T, Ep], [T, Ep], [T, Ep]],
     Ep: [[Eps], [Eps], ['+', T, Ep], ['-', T, Ep], [Eps], [Eps], [Eps], [Eps], [Eps], [Eps], [Eps]],
     T: [[F, Tp], [F, Tp], [F, Tp], [F, Tp], [F, Tp], [F, Tp], [F, Tp], [F, Tp], [F, Tp], [F, Tp], [F, Tp]],
@@ -273,8 +273,6 @@ def parser(input_string):
     output_string = []
     stack = [S]
     while(input_string and stack):
-        print("L=>", ' '.join([symbol_map[char] if(char in symbol_map.keys()) else char for char in output_string]), end='|')
-        print(' '.join([symbol_map[char] if(char in symbol_map.keys()) else char for char in stack[::-1]]))
         current_token = stack[-1]
         #print(input_string, current_token, stack)
         stack.pop(-1)
@@ -282,16 +280,22 @@ def parser(input_string):
             output_string.append(input_string[0])
             input_string = input_string[1:]
             continue
+        print("L=>", ' '.join([symbol_map[char] if(char in symbol_map.keys()) else char for char in output_string]), end=' ' if output_string else '')
+        print(symbol_map[current_token] if current_token in symbol_map else current_token, end = ' ')
+        print(' '.join([symbol_map[char] if(char in symbol_map.keys()) else char for char in stack[::-1]]))
         if(input_string[0] not in PARSING_TBL['HEADER']):
-            print(input_string[0])
             print("parse error")
             return None
         col_ind = PARSING_TBL['HEADER'].index(input_string[0])
+        if(current_token not in PARSING_TBL):
+            print("parse error")
+            return None
         if(PARSING_TBL[current_token][col_ind] == []):
             print("parse error")
             return None
         if(PARSING_TBL[current_token][col_ind] == [Eps]):
             continue
         stack = stack + PARSING_TBL[current_token][col_ind][::-1]
+    print("L=>", ' '.join([symbol_map[char] if(char in symbol_map.keys()) else char for char in output_string]))
 
 parser(input_string)
