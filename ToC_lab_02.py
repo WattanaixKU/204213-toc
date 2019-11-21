@@ -262,14 +262,16 @@ def parser(output_string, input_string):
     # print(symbol_name[symbol], input_string)
     output_ind = 0
     token_ind = 0
+    if(len(output_string) == 0):
+        return ERROR
     while(output_ind < len(output_string)):
         if(output_string[output_ind] not in GRAMMAR.keys()):
             if(output_string[output_ind] == input_string[token_ind]):
                 token_ind += 1
             output_ind += 1
             continue
-        print('L=>', ' '.join([symbol_map[char] if(char in symbol_map) else char for char in output_string]) )  # , output_ind, input_string[token_ind:])
         find_rule = False
+        print('L=>', ' '.join([symbol_map[char] if(char in symbol_map) else char for char in output_string]) )  # , output_ind, input_string[token_ind:])
         for rule in GRAMMAR[output_string[output_ind]]:
             if(len(rule) == 0):
                 find_rule = True
@@ -280,11 +282,14 @@ def parser(output_string, input_string):
                 output_string = output_string[:output_ind] + rule + output_string[output_ind+1:]
                 break
         if(not find_rule):
-            print('parse error')
             return ERROR
     if(token_ind != len(input_string)-1):
-        print('parse error')
+        return ERROR
     else:
         print('L=>', ' '.join([symbol_map[char] if(char in symbol_map) else char for char in output_string]) )
-        
-parser([S], input_string)
+
+starter = []
+if(input_string[0] in [GRAMMAR[S][rule_ind][0] for rule_ind in range(len(GRAMMAR[S])-1)]):
+    starter.append(S)
+if(parser(starter, input_string) == ERROR):
+    print('parse error')
