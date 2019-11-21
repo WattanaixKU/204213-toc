@@ -269,6 +269,10 @@ PARSING_TBL = {
     A: [[Eps], [Eps], [Eps], [Eps], [Eps], [Eps], ['(', E, ')'], [Eps], [Eps], [Eps], [Eps]]
 }
 
+class ParsingError(Exception):
+   """Raised when parsing error"""
+   pass
+
 def parser(input_string):
     output_string = []
     stack = [S]
@@ -285,18 +289,18 @@ def parser(input_string):
         print(' '.join([symbol_map[char] if(char in symbol_map.keys()) else char for char in stack[::-1]]))
         if(input_string[0] not in PARSING_TBL['HEADER']):
             print("L=>")
-            print("parse error")
-            return None
+            raise ParsingError
         col_ind = PARSING_TBL['HEADER'].index(input_string[0])
         if(current_token not in PARSING_TBL):
-            print("parse error")
-            return None
+            raise ParsingError
         if(PARSING_TBL[current_token][col_ind] == []):
-            print("parse error")
-            return None
+            raise ParsingError
         if(PARSING_TBL[current_token][col_ind] == [Eps]):
             continue
         stack = stack + PARSING_TBL[current_token][col_ind][::-1]
     print("L=>", ' '.join([symbol_map[char] if(char in symbol_map.keys()) else char for char in output_string]))
 
-parser(input_string)
+try:
+    parser(input_string)
+except ParsingError:
+    print("parse error")
