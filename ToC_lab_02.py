@@ -284,6 +284,7 @@ def parser(input_string):
         print(symbol_map[current_token] if current_token in symbol_map else current_token, end = ' ')
         print(' '.join([symbol_map[char] if(char in symbol_map.keys()) else char for char in stack[::-1]]))
         if(input_string[0] not in PARSING_TBL['HEADER']):
+            print("L=>")
             print("parse error")
             return None
         col_ind = PARSING_TBL['HEADER'].index(input_string[0])
